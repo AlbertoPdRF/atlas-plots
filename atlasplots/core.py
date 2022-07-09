@@ -1188,6 +1188,10 @@ class Axes:
         if "ncol" in kwargs:
             self._legend.SetNColumns(kwargs["ncol"])
 
+        # Header
+        if "header" in kwargs:
+            self._legend.SetHeader(kwargs["header"])
+
         # Legend border size
         if "bordersize" in kwargs:
             self._legend.SetBorderSize(kwargs["bordersize"])
