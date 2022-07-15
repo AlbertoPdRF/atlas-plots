@@ -158,9 +158,11 @@ class Figure:
             )
 
         if wspace is not None:
-            warnings.warn("The 'wspace' option is not implemented", stacklevel=2)
+            warnings.warn(
+                "The 'wspace' option is not implemented", stacklevel=2)
         if hspace is not None:
-            warnings.warn("The 'hspace' option is not implemented", stacklevel=2)
+            warnings.warn(
+                "The 'hspace' option is not implemented", stacklevel=2)
 
         if width_ratios is None:
             width_ratios = [1] * ncols
@@ -257,7 +259,8 @@ class Axes:
         self._pad.Draw()
         self._pad.cd()
         self._frame.SetBinContent(1, 1)
-        self._frame.SetMinimum(1e-10)  # Ensures ylims are not equal and non-zero
+        # Ensures ylims are not equal and non-zero
+        self._frame.SetMinimum(1e-10)
         self._frame.Draw("AXIS")  # Draw axes of `self._frame` only
 
         self._logy = False  # x-axis in log-scale
@@ -344,7 +347,8 @@ class Axes:
             calls ``SetMarkerStyle(...)``.
         """
         self._pad.cd()
-        self._pad.Update()  # Updating the pad prevents spontaneous seg faults...
+        # Updating the pad prevents spontaneous seg faults...
+        self._pad.Update()
 
         # Apply formatting (if any) before calling `Draw()`
         root_helpers.set_graphics_attributes(obj, **kwargs)
@@ -360,7 +364,8 @@ class Axes:
 
             # Get new axis limits (to expand if needed)
             left, right = obj.GetXaxis().GetXmin(), obj.GetXaxis().GetXmax()
-            bottom, top = root_helpers.hist_min(obj), root_helpers.hist_max(obj)
+            bottom, top = root_helpers.hist_min(
+                obj), root_helpers.hist_max(obj)
 
         elif isinstance(obj, root.THStack):
             # Stacked Histogram
@@ -370,23 +375,28 @@ class Axes:
             top_hist = obj.GetStack().Last()
             bottom_hist = obj.GetStack().First()
             left, right = top_hist.GetXaxis().GetXmin(), top_hist.GetXaxis().GetXmax()
-            bottom, top = root_helpers.hist_min(bottom_hist), root_helpers.hist_max(top_hist)
+            bottom, top = root_helpers.hist_min(
+                bottom_hist), root_helpers.hist_max(top_hist)
 
         elif isinstance(obj, root.TGraph):
             # Graph
             obj.Draw(options)
 
             # Get new axis limits (to expand if needed)
-            left, right = root_helpers.graph_xmin(obj), root_helpers.graph_xmax(obj)
-            bottom, top = root_helpers.graph_ymin(obj), root_helpers.graph_ymax(obj)
+            left, right = root_helpers.graph_xmin(
+                obj), root_helpers.graph_xmax(obj)
+            bottom, top = root_helpers.graph_ymin(
+                obj), root_helpers.graph_ymax(obj)
 
         elif isinstance(obj, root.TMultiGraph):
             # Multigraph
             obj.Draw(options)
 
             # Get new axis limits (to expand if needed)
-            left, right = root_helpers.multigraph_xmin(obj), root_helpers.multigraph_xmax(obj)
-            bottom, top = root_helpers.multigraph_ymin(obj), root_helpers.multigraph_ymax(obj)
+            left, right = root_helpers.multigraph_xmin(
+                obj), root_helpers.multigraph_xmax(obj)
+            bottom, top = root_helpers.multigraph_ymin(
+                obj), root_helpers.multigraph_ymax(obj)
 
         elif isinstance(obj, root.TLine):
             # Line
@@ -405,7 +415,8 @@ class Axes:
                 bottom, top = old_bottom, old_top
 
             except AttributeError:
-                raise TypeError("Attempting to plot an object with no Draw() method")
+                raise TypeError(
+                    "Attempting to plot an object with no Draw() method")
 
         # Add object to list of legend entries if label was provided
         if label is not None:
@@ -445,7 +456,8 @@ class Axes:
             self.set_xlim(new_left, new_right)
             self.set_ylim(new_bottom, new_top)
 
-        self._pad.RedrawAxis()  # Redraw so axes appear above colour-filled areas
+        # This seems to have something to do with the axis problem: https://github.com/joeycarter/atlas-plots/issues/7
+        # self._pad.RedrawAxis()  # Redraw so axes appear above colour-filled areas
 
         self._is_empty = False  # Record that the axes are no longer empty
 
@@ -463,7 +475,8 @@ class Axes:
         See :meth:`~.core.Axes.plot` for full documentation of the other options.
         """
         self._pad.cd()
-        self._pad.Update()  # Updating the pad prevents spontaneous seg faults...
+        # Updating the pad prevents spontaneous seg faults...
+        self._pad.Update()
 
         # Apply formatting (if any) before calling `Draw()`
         root_helpers.set_graphics_attributes(obj, **kwargs)
@@ -491,7 +504,8 @@ class Axes:
                 obj.Draw(options)
 
             except AttributeError:
-                raise TypeError("Attempting to plot an object with no Draw() method")
+                raise TypeError(
+                    "Attempting to plot an object with no Draw() method")
 
         # Add object to list of legend entries if label was provided
         if label is not None:
@@ -754,31 +768,39 @@ class Axes:
         old_bottom, old_top = self.get_ylim()
 
         if not self._logy:
-            ymin = ((1 - top) * old_bottom - bottom * old_top) / (1 - top - bottom)
-            ymax = ((1 - bottom) * old_top - top * old_bottom) / (1 - top - bottom)
+            ymin = ((1 - top) * old_bottom - bottom *
+                    old_top) / (1 - top - bottom)
+            ymax = ((1 - bottom) * old_top - top *
+                    old_bottom) / (1 - top - bottom)
 
         else:
             ymin = np.power(
                 10,
-                ((1 - top) * np.log10(old_bottom) - bottom * np.log10(old_top)) / (1 - top - bottom)
+                ((1 - top) * np.log10(old_bottom) - bottom *
+                 np.log10(old_top)) / (1 - top - bottom)
             )
             ymax = np.power(
                 10,
-                ((1 - bottom) * np.log10(old_top) - top * np.log10(old_bottom)) / (1 - top - bottom)
+                ((1 - bottom) * np.log10(old_top) - top *
+                 np.log10(old_bottom)) / (1 - top - bottom)
             )
 
         if not self._logx:
-            xmin = ((1 - right) * old_left - left * old_right) / (1 - right - left)
-            xmax = ((1 - left) * old_right - right * old_left) / (1 - right - left)
+            xmin = ((1 - right) * old_left - left *
+                    old_right) / (1 - right - left)
+            xmax = ((1 - left) * old_right - right *
+                    old_left) / (1 - right - left)
 
         else:
             xmin = np.power(
                 10,
-                ((1 - right) * np.log10(old_left) - left * np.log10(old_right)) / (1 - right - left)
+                ((1 - right) * np.log10(old_left) - left *
+                 np.log10(old_right)) / (1 - right - left)
             )
             xmax = np.power(
                 10,
-                ((1 - left) * np.log10(old_right) - right * np.log10(old_left)) / (1 - right - left)
+                ((1 - left) * np.log10(old_right) - right *
+                 np.log10(old_left)) / (1 - right - left)
             )
 
         self.set_xlim(xmin, xmax)
@@ -1172,7 +1194,8 @@ class Axes:
         self._pad.cd()
 
         if self._legend is not None and isinstance(self._legend, root.TLegend):
-            warnings.warn("These axes already have a legend, will overwrite", stacklevel=2)
+            warnings.warn(
+                "These axes already have a legend, will overwrite", stacklevel=2)
             self._legend.Delete()
 
         self._legend = root.TLegend(*loc)
@@ -1275,9 +1298,11 @@ class Axes:
                     continue
 
                 if bin_content > ymax:
-                    draw_up_arrow(bin_center, ymax - length - buff, ymax - buff)
+                    draw_up_arrow(bin_center, ymax -
+                                  length - buff, ymax - buff)
                 elif bin_content < ymin:
-                    draw_down_arrow(bin_center, ymin + buff, ymin + length + buff)
+                    draw_down_arrow(bin_center, ymin + buff,
+                                    ymin + length + buff)
 
         elif isinstance(obj, root.TGraph):
             for i in range(obj.GetN()):
@@ -1293,4 +1318,5 @@ class Axes:
                     draw_down_arrow(x, ymin + buff, ymin + length + buff)
 
         else:
-            raise TypeError(f"invalid data type '{type(obj)}'; must be instance of TH1 or TGraph")
+            raise TypeError(
+                f"invalid data type '{type(obj)}'; must be instance of TH1 or TGraph")
