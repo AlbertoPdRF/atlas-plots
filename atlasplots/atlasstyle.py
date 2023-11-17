@@ -79,7 +79,7 @@ def atlas_style(tsize=29):
 
     # Set title offsets (for axis labels)
     atlasStyle.SetTitleXOffset(1.4)
-    atlasStyle.SetTitleYOffset(1.4)
+    atlasStyle.SetTitleYOffset(1.9)
 
     # Set font
     font = 43  # Arial
@@ -104,11 +104,12 @@ def atlas_style(tsize=29):
     # Use bold lines and markers
     atlasStyle.SetMarkerStyle(20)
     atlasStyle.SetMarkerSize(1.2)
+    atlasStyle.SetLineWidth(2)
     atlasStyle.SetHistLineWidth(2)
-    atlasStyle.SetLineStyleString(2, "[12 12]") # postscript dashes
+    atlasStyle.SetLineStyleString(2, "[12 12]")  # postscript dashes
 
     # Get rid of error bar caps
-    atlasStyle.SetEndErrorSize(0.)
+    atlasStyle.SetEndErrorSize(0.0)
 
     # Do not display any of the standard histogram decorations
     atlasStyle.SetOptTitle(0)
